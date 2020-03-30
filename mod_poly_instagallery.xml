@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="module" version="3.1" client="site" method="upgrade">
+	<name>MOD_POLY_INSTAGALLERY</name>
+	<author>POLYTOPE, Inc.</author>
+	<creationDate>2020/03/31</creationDate>
+	<copyright>Copyright (C) 2020 POLYTOPE, Inc. All rights reserved.</copyright>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<authorEmail>info@polytope.co.jp</authorEmail>
+	<authorUrl>https://www.polytope.co.jp</authorUrl>
+	<version>1.0.1</version>
+	<description>MOD_POLY_INSTAGALLERY_XML_DESCRIPTION</description>
+
+	<customContent />
+
+	<files>
+		<filename module="mod_poly_instagallery">mod_poly_instagallery.php</filename>
+		<folder>tmpl</folder>
+		<folder>language</folder>
+		<folder>cache</folder>
+		<folder>css</folder>
+		<folder>img</folder>
+		<folder>js</folder>
+		<folder>fonts</folder>
+		<folder>helper</folder>
+	</files>
+
+	<config>
+		<fields name="params">
+			<fieldset name="settings" label="MOD_POLY_INSTAGALLERY_SETTINGS_FIELDSET_LABEL">
+				<field name="business_account_id" type="text" default=""
+					   label="MOD_POLY_INSTAGALLERY_INSTAGRAM_BUSINESS_ACCOUNT_ID"
+					   description="MOD_POLY_INSTAGALLERY_INSTAGRAM_BUSINESS_ACCOUNT_ID_DESC" />
+				<field name="access_token" type="password" default="" maxlength="512"
+					   label="MOD_POLY_INSTAGALLERY_ACCESS_TOKEN"
+					   description="MOD_POLY_INSTAGALLERY_ACCESS_TOKEN_DESC" />
+				<field name="cache_time" type="number" default="60" min="10" max="1440"
+					   label="MOD_POLY_INSTAGALLERY_API_CACHE_TIME"
+					   description="MOD_POLY_INSTAGALLERY_API_CACHE_TIME_DESC" />
+				<field name="from" type="list" default="username"
+					   label="MOD_POLY_INSTAGALLERY_FROM"
+					   description="MOD_POLY_INSTAGALLERY_FROM_DESC">
+					<option value="username">MOD_POLY_INSTAGALLERY_USER_NAME</option>
+					<option value="hashtag">MOD_POLY_INSTAGALLERY_HASHTAG</option>
+				</field>
+				<field name="username" type="text" default=""
+					   label="MOD_POLY_INSTAGALLERY_USER_NAME"
+					   description="MOD_POLY_INSTAGALLERY_USER_NAME_DESC" />
+				<field name="hashtag" type="text" default=""
+					   label="MOD_POLY_INSTAGALLERY_HASHTAG"
+					   description="MOD_POLY_INSTAGALLERY_HASHTAG_DESC" />
+				<field name="breakpoint" type="number" default="767" min="300" max="1000"
+					   label="MOD_POLY_INSTAGALLERY_BREAKPOINT"
+					   description="MOD_POLY_INSTAGALLERY_BREAKPOINT_DESC" />
+				<field name="gallery_items" type="number" default="8" min="1" max="20"
+					   label="MOD_POLY_INSTAGALLERY_ITEMS"
+					   description="MOD_POLY_INSTAGALLERY_ITEMS_DESC" />
+				<field name="gallery_cols" type="number" default="4" min="1" max="4"
+					   label="MOD_POLY_INSTAGALLERY_COLS"
+					   description="MOD_POLY_INSTAGALLERY_COLS_DESC" />
+				<field name="gallery_cols_sp" type="number" default="2" min="1" max="4"
+					   label="MOD_POLY_INSTAGALLERY_COLS_SP"
+					   description="MOD_POLY_INSTAGALLERY_COLS_SP_DESC" />
+				<field name="hover_color" type="color" default="rgba(0, 0, 0, 0.6)" format="rgba"
+					   label="MOD_POLY_INSTAGALLERY_HOVER_COLOR"
+					   description="MOD_POLY_INSTAGALLERY_HOVER_COLOR_DESC" />
+			</fieldset>
+		</fields>
+	</config>
+</extension>

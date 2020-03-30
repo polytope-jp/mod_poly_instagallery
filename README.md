@@ -23,4 +23,3 @@ Joomla! 3.8.0 or later
 ## Author
 
 [polytope-jp](https://github.com/polytope-jp)
-

@@ -21,9 +21,9 @@
     left: 0;
     object-fit: cover;
     transition: all 0.5s ease;
-    width: calc(100% - 8px);
+    width: 100%;
     margin: 0;
-    padding: 4px;
+    padding: 0;
     z-index: 10;
     opacity: 0;
     background-color: rgba(0, 0, 0, 0.6);
@@ -62,22 +62,6 @@
     left: 0;
     margin: auto;
     object-fit: cover;
-}
-
-.col1 {
-    width: 100%;
-}
-
-.col2 {
-    width: 50%;
-}
-
-.col3 {
-    width: 33.3%;
-}
-
-.col4 {
-    width: 25%;
 }
 
 .clearfix::after {

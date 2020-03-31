@@ -101,6 +101,10 @@ class InstagramHelper {
         return $type;
     }
 
+    public static function floorEx($value, $precision = 1) {
+        return round($value - 0.5 * pow(0.1, $precision), $precision, PHP_ROUND_HALF_UP);
+    }
+
     private static function getItemsFromUserName(JRegistry $params) {
         // Module Parameters
         $accountId = $params->get('business_account_id');

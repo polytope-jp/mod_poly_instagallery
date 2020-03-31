@@ -2,12 +2,12 @@
 <extension type="module" version="3.1" client="site" method="upgrade">
 	<name>MOD_POLY_INSTAGALLERY</name>
 	<author>POLYTOPE, Inc.</author>
-	<creationDate>2020/03/31</creationDate>
+	<creationDate>2020/04/01</creationDate>
 	<copyright>Copyright (C) 2020 POLYTOPE, Inc. All rights reserved.</copyright>
 	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
 	<authorEmail>info@polytope.co.jp</authorEmail>
 	<authorUrl>https://www.polytope.co.jp</authorUrl>
-	<version>1.0.1</version>
+	<version>1.0.2</version>
 	<description>MOD_POLY_INSTAGALLERY_XML_DESCRIPTION</description>
 
 	<customContent />
@@ -54,10 +54,10 @@
 				<field name="gallery_items" type="number" default="8" min="1" max="20"
 					   label="MOD_POLY_INSTAGALLERY_ITEMS"
 					   description="MOD_POLY_INSTAGALLERY_ITEMS_DESC" />
-				<field name="gallery_cols" type="number" default="4" min="1" max="4"
+				<field name="gallery_cols" type="number" default="4" min="1" max="10"
 					   label="MOD_POLY_INSTAGALLERY_COLS"
 					   description="MOD_POLY_INSTAGALLERY_COLS_DESC" />
-				<field name="gallery_cols_sp" type="number" default="2" min="1" max="4"
+				<field name="gallery_cols_sp" type="number" default="2" min="1" max="10"
 					   label="MOD_POLY_INSTAGALLERY_COLS_SP"
 					   description="MOD_POLY_INSTAGALLERY_COLS_SP_DESC" />
 				<field name="hover_color" type="color" default="rgba(0, 0, 0, 0.6)" format="rgba"

@@ -20,11 +20,13 @@ try {
 
 // module parameters
 $itemNum = intval($params->get('gallery_items', 8));
-$cols = intval($params->get('gallery_cols', 4));
+$colsPc = intval($params->get('gallery_cols', 4));
 $colsSp = intval($params->get('gallery_cols_sp', 2));
-$spWidth = round(100 / $colsSp, 1);
 $breakpoint = intval($params->get('breakpoint', 767));
 $hoverColor = $params->get('hover_color', 'rgba(0, 0, 0, 0.6)');
+
+$pcWidth = InstagramHelper::floorEx(100 / $colsPc, 5);
+$spWidth = InstagramHelper::floorEx(100 / $colsSp, 5);
 
 $basePath = 'modules/mod_poly_instagallery';
 ?>
@@ -32,13 +34,17 @@ $basePath = 'modules/mod_poly_instagallery';
     .poly_insta-item .poly_insta-overlay {
         background-color: <?php echo $hoverColor; ?> !important;
     }
+
+    .poly_insta-item {
+        width: <?php echo $pcWidth; ?>% !important;
+    }
     @media screen and (max-width: <?php echo $breakpoint; ?>px) {
         .poly_insta-item {
             width: <?php echo $spWidth; ?>% !important;
         }
     }
 </style>
-<link rel="stylesheet" type="text/css" href="<?php echo $basePath; ?>/css/mod_poly_instagallery.css?v1.0.1">
+<link rel="stylesheet" type="text/css" href="<?php echo $basePath; ?>/css/mod_poly_instagallery.css?v1.0.2">
 <div class="poly_insta clearfix">
     <?php for ($col = 0; $col < count($items); $col++) : ?>
         <?php
@@ -51,7 +57,7 @@ $basePath = 'modules/mod_poly_instagallery';
         $mediaUrl = InstagramHelper::getMediaUrl($item);
         ?>
         <a href="<?php echo $item['permalink']; ?>" target="_blank">
-            <div class="poly_insta-item col<?php echo $cols; ?>">
+            <div class="poly_insta-item">
                 <?php if ($mediaType === 'IMAGE') : ?>
                     <img alt="" src="<?php echo $mediaUrl; ?>"/>
                 <?php elseif ($mediaType === 'VIDEO') : ?>

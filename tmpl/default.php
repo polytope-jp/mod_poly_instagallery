@@ -24,12 +24,43 @@ $colsPc = intval($params->get('gallery_cols', 4));
 $colsSp = intval($params->get('gallery_cols_sp', 2));
 $breakpoint = intval($params->get('breakpoint', 767));
 $hoverColor = $params->get('hover_color', 'rgba(0, 0, 0, 0.6)');
+$dispType = $params->get('display_type', 'gallery');
+$sliderIconColor = $params->get('slider_icon_color', '#000000');
 
 $pcWidth = InstagramHelper::floorEx(100 / $colsPc, 5);
 $spWidth = InstagramHelper::floorEx(100 / $colsSp, 5);
 
+if ($dispType === 'slider') {
+    $pcWidth = 100;
+    $spWidth = 100;
+}
+
 $basePath = 'modules/mod_poly_instagallery';
 ?>
+<link rel="stylesheet" type="text/css" href="<?php echo $basePath; ?>/css/mod_poly_instagallery.css?v1.1.0">
+<?php if ($dispType === 'slider') : ?>
+<link rel="stylesheet" type="text/css" href="<?php echo $basePath; ?>/css/slick.css">
+<link rel="stylesheet" type="text/css" href="<?php echo $basePath; ?>/css/slick-theme_custom.css">
+<script src="<?php echo $basePath; ?>/js/slick.min.js"></script>
+<script type="text/javascript">
+    jQuery(document).ready(function(){
+        jQuery('.poly_insta').slick({
+            infinite: false,
+            dots: true,
+            slidesToShow: <?php echo $colsPc; ?>,
+            slidesToScroll: <?php echo $colsPc; ?>,
+            responsive: [
+            {
+                breakpoint: <?php echo $breakpoint + 1; ?>,
+                settings: {
+                    slidesToShow: <?php echo $colsSp; ?>,
+                    slidesToScroll: <?php echo $colsSp; ?>,
+                }
+            }],
+        });
+    });
+</script>
+<?php endif; ?>
 <style>
     .poly_insta-item .poly_insta-overlay {
         background-color: <?php echo $hoverColor; ?> !important;
@@ -43,8 +74,12 @@ $basePath = 'modules/mod_poly_instagallery';
             width: <?php echo $spWidth; ?>% !important;
         }
     }
+    .slick-prev:before,
+    .slick-next:before,
+    .slick-dots li.slick-active button:before {
+        color: <?php echo $sliderIconColor; ?>;
+    }
 </style>
-<link rel="stylesheet" type="text/css" href="<?php echo $basePath; ?>/css/mod_poly_instagallery.css?v1.0.2">
 <div class="poly_insta clearfix">
     <?php for ($col = 0; $col < count($items); $col++) : ?>
         <?php

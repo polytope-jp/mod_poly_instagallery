@@ -2,12 +2,12 @@
 <extension type="module" version="3.1" client="site" method="upgrade">
 	<name>MOD_POLY_INSTAGALLERY</name>
 	<author>POLYTOPE, Inc.</author>
-	<creationDate>2020/04/01</creationDate>
+	<creationDate>2020/04/07</creationDate>
 	<copyright>Copyright (C) 2020 POLYTOPE, Inc. All rights reserved.</copyright>
 	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
 	<authorEmail>info@polytope.co.jp</authorEmail>
 	<authorUrl>https://www.polytope.co.jp</authorUrl>
-	<version>1.0.3</version>
+	<version>1.1.0</version>
 	<description>MOD_POLY_INSTAGALLERY_XML_DESCRIPTION</description>
 
 	<customContent />
@@ -48,6 +48,12 @@
 				<field name="hashtag" type="text" default=""
 					   label="MOD_POLY_INSTAGALLERY_HASHTAG"
 					   description="MOD_POLY_INSTAGALLERY_HASHTAG_DESC" />
+				<field name="display_type" type="list" default="gallery"
+					   label="MOD_POLY_INSTAGALLERY_DISPLAY_TYPE"
+					   description="MOD_POLY_INSTAGALLERY_DISPLAY_TYPE_DESC">
+					<option value="gallery">MOD_POLY_INSTAGALLERY_GALLERY</option>
+					<option value="slider">MOD_POLY_INSTAGALLERY_SLIDER</option>
+				</field>
 				<field name="breakpoint" type="number" default="767" min="300" max="1000"
 					   label="MOD_POLY_INSTAGALLERY_BREAKPOINT"
 					   description="MOD_POLY_INSTAGALLERY_BREAKPOINT_DESC" />
@@ -63,6 +69,9 @@
 				<field name="hover_color" type="color" default="rgba(0, 0, 0, 0.6)" format="rgba"
 					   label="MOD_POLY_INSTAGALLERY_HOVER_COLOR"
 					   description="MOD_POLY_INSTAGALLERY_HOVER_COLOR_DESC" />
+				<field name="slider_icon_color" type="color" default="#000000" format="rgb"
+					   label="MOD_POLY_INSTAGALLERY_SLIDER_ICON_COLOR"
+					   description="MOD_POLY_INSTAGALLERY_SLIDER_ICON_COLOR_DESC" />
 			</fieldset>
 		</fields>
 	</config>

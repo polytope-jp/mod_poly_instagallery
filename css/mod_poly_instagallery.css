@@ -37,7 +37,10 @@
 }
 
 .poly_insta-iteminfo span {
-    margin-left: 8px;
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    margin: 0 .25em;
 }
 
 .pos-rb {

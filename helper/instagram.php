@@ -110,7 +110,7 @@ class InstagramHelper {
         $accountId = $params->get('business_account_id');
         $accessToken = $params->get('access_token');
         $userName = $params->get('username');
-        $cacheTime = $params->get('cache_time');
+        $cacheTime = intval($params->get('cache_time', 60));
         $itemNum = $params->get('gallery_items');
 
         $userName = str_replace('@', '', $userName);
@@ -185,22 +185,18 @@ class InstagramHelper {
     }
 
     private static function callJsonApi($url, $cacheTime) {
-        $cacheId = md5($url);
-        $cacheFile = __DIR__ . '/../cache/' . $cacheId . '.json';
-
         // Search Cache File
-        if (JFile::exists($cacheFile)) {
-            $cacheJson = file_get_contents($cacheFile);
-            $cacheData = json_decode($cacheJson);
-            $created = intval($cacheData->created);
-            $limit = $created + $cacheTime * 60; // sec.
-            $now = time();
+        $cache = JFactory::getCache('mod_poly_instagallery', '')->cache;
+        $cache->setCaching(true);
+        $cache->setLifeTime($cacheTime);
 
-            if ($now <= $limit) {
-                // Cache Hit
-                $result = json_decode($cacheData->response, true);
-                return $result;
-            }
+        $cacheId = md5($url);
+
+        $cacheJson = $cache->get($cacheId);
+        if (!empty($cacheJson)) {
+            $cacheData = json_decode($cacheJson);
+            $result = json_decode($cacheData->response, true);
+            return $result;
         }
 
         $curl = curl_init();
@@ -234,7 +230,7 @@ class InstagramHelper {
         $cacheData->created = $now;
         $cacheData->response = $response;
         $cacheJson = json_encode($cacheData);
-        file_put_contents($cacheFile, $cacheJson);
+        $cache->store($cacheJson, $cacheId);
 
         curl_close($curl);
         return $result;

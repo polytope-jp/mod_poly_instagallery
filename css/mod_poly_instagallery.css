@@ -32,8 +32,10 @@
 }
 
 .poly_insta-iteminfo {
-    margin-top: 40%;
+    margin-top: calc(50% - 9px);
+    line-height: 18px;
     text-align: center;
+
 }
 
 .poly_insta-iteminfo span {
@@ -87,7 +89,10 @@
     font-display: block;
 }
 
-[class^="icon-"], [class*=" icon-"] {
+.poly_insta [class^="icon-"],
+.poly_insta [class*=" icon-"],
+.poly_insta [class^="icon-"]:before,
+.poly_insta [class*=" icon-"]:before {
     /* use !important to prevent issues with browser extensions that change fonts */
     font-family: 'icomoon' !important;
     speak: none;
@@ -102,12 +107,12 @@
     -moz-osx-font-smoothing: grayscale;
 }
 
-.icon-bubble:before {
+.poly_insta .icon-bubble:before {
     content: "\e96b";
 }
-.icon-heart:before {
+.poly_insta .icon-heart:before {
     content: "\e9da";
 }
-.icon-instagram:before {
+.poly_insta .icon-instagram:before {
     content: "\ea92";
 }

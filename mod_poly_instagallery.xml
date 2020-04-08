@@ -2,12 +2,12 @@
 <extension type="module" version="3.1" client="site" method="upgrade">
 	<name>MOD_POLY_INSTAGALLERY</name>
 	<author>POLYTOPE, Inc.</author>
-	<creationDate>2020/04/07</creationDate>
+	<creationDate>2020/04/09</creationDate>
 	<copyright>Copyright (C) 2020 POLYTOPE, Inc. All rights reserved.</copyright>
 	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
 	<authorEmail>info@polytope.co.jp</authorEmail>
 	<authorUrl>https://www.polytope.co.jp</authorUrl>
-	<version>1.1.0</version>
+	<version>1.1.1</version>
 	<description>MOD_POLY_INSTAGALLERY_XML_DESCRIPTION</description>
 
 	<customContent />
@@ -16,7 +16,6 @@
 		<filename module="mod_poly_instagallery">mod_poly_instagallery.php</filename>
 		<folder>tmpl</folder>
 		<folder>language</folder>
-		<folder>cache</folder>
 		<folder>css</folder>
 		<folder>img</folder>
 		<folder>js</folder>
@@ -69,7 +68,7 @@
 				<field name="hover_color" type="color" default="rgba(0, 0, 0, 0.6)" format="rgba"
 					   label="MOD_POLY_INSTAGALLERY_HOVER_COLOR"
 					   description="MOD_POLY_INSTAGALLERY_HOVER_COLOR_DESC" />
-				<field name="slider_icon_color" type="color" default="#000000" format="rgb"
+				<field name="slider_icon_color" type="color" default="rgb(0, 0, 0)" format="rgb"
 					   label="MOD_POLY_INSTAGALLERY_SLIDER_ICON_COLOR"
 					   description="MOD_POLY_INSTAGALLERY_SLIDER_ICON_COLOR_DESC" />
 			</fieldset>
@@ -77,6 +76,6 @@
 	</config>
 
 	<updateservers>
-		<server type="collection">https://jdemo.polytope.co.jp/update/list.xml</server>
+		<server type="collection" name="POLYTOPE Update Collection">https://jdemo.polytope.co.jp/update/list.xml</server>
 	</updateservers>
 </extension>

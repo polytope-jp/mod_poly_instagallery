@@ -11,6 +11,11 @@ defined('_JEXEC') or die;
 
 require_once __DIR__ . '/../helper/instagram.php';
 
+$app = JFactory::getApplication();
+$menus = $app->getMenu();
+$active = $menus->getActive();
+$itemId = $active->id;
+
 // module parameters
 $itemNum = intval($params->get('gallery_items', 8));
 $colsPc = intval($params->get('gallery_cols', 4));
@@ -60,7 +65,7 @@ if ($dispType === 'slider') {
 <script>
     jQuery(function() {
         jQuery.ajax({
-            url: 'index.php?option=com_ajax&module=poly_instagallery&method=getItems&format=json',
+            url: 'index.php?option=com_ajax&module=poly_instagallery&method=getItems&format=json&moduleId=<?php echo $module->id; ?>&Itemid=<?php echo $itemId; ?>',
             type: "post",
             dataType: "json",
             success :function(response){

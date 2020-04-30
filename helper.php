@@ -11,7 +11,12 @@ require_once __DIR__ . '/helper/instagram.php';
 
 class ModPolyInstagalleryHelper {
     public static function getItemsAjax() {
-        $module = JModuleHelper::getModule('mod_poly_instagallery');
+        $app = JFactory::getApplication();
+        $input = $app->input;
+
+        $moduleId = $input->get('moduleId');
+
+        $module = JModuleHelper::getModuleById($moduleId);
         $params = new JRegistry($module->params);
         $result = array();
 

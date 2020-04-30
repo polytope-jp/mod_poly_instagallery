@@ -10,10 +10,13 @@
 defined('_JEXEC') or die;
 
 class InstagramHelper {
+    const LOG_CATEGORY = 'mod_poly_instagallery';
     const API_BASEURL = 'https://graph.facebook.com/v6.0/';
     const FIELDS_MEDIA = 'media_url,media_type,comments_count,id,like_count,children{media_url,media_type,permalink},permalink,caption';
 
     public static function getInstagramItems(JRegistry $params) {
+        JLog::addLogger(array('text_file' => 'mod_poly_instagallery.php'), JLog::ALL, array(self::LOG_CATEGORY));
+
         // Module Parameters
         $from = $params->get('from');
 
@@ -24,7 +27,11 @@ class InstagramHelper {
             $items = self::getItemsFromHashTags($params);
         }
         else {
-            throw new Exception('parameter "from" is invalid.');
+            return false;
+        }
+
+        if (!$items) {
+            return false;
         }
 
         $items = self::removeEmptyAlbum($items);
@@ -120,6 +127,9 @@ class InstagramHelper {
             . '&access_token=' . $accessToken;
 
         $res = self::callJsonApi($url, $cacheTime);
+        if (!$res) {
+            return false;
+        }
         $items = $res['business_discovery']['media']['data'];
 
         return $items;
@@ -145,6 +155,9 @@ class InstagramHelper {
                 . '&q=' . $tag
                 . '&access_token=' . $accessToken;
             $res = self::callJsonApi($url, $cacheTime);
+            if (!$res) {
+                return false;
+            }
             $tagIds = $res['data'];
 
             if (count($tagIds) > 0) {
@@ -153,6 +166,9 @@ class InstagramHelper {
                     . '&fields=' . self::FIELDS_MEDIA
                     . '&access_token=' . $accessToken;
                 $res = self::callJsonApi($url, $cacheTime);
+                if (!$res) {
+                    return false;
+                }
 
                 for ($itemIdx = 0; $itemIdx < count($res['data']); $itemIdx++) {
                     $res['data'][$itemIdx]['sort_key'] = $tagIdx + $itemIdx * $tagsNum;
@@ -211,17 +227,20 @@ class InstagramHelper {
 
         if (CURLE_OK !== $errno) {
             // Error
-            throw new Exception('API Error');
+            JLog::add('API Error', JLog::ERROR, self::LOG_CATEGORY);
+            return false;
         }
 
         $result = json_decode($response, true);
         if (empty($result)) {
             // Error
-            throw new Exception('API Error');
+            JLog::add('API Error', JLog::ERROR, self::LOG_CATEGORY);
+            return false;
         }
         if (array_key_exists('error', $result)) {
             // Error
-            throw new Exception('API Error : ' . $result['error']['message']);
+            JLog::add('API Error : ' . $result['error']['message'], JLog::ERROR, self::LOG_CATEGORY);
+            return false;
         }
 
         // Save Cache File

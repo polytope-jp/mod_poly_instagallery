@@ -2,12 +2,12 @@
 <extension type="module" version="3.1" client="site" method="upgrade">
 	<name>MOD_POLY_INSTAGALLERY</name>
 	<author>POLYTOPE, Inc.</author>
-	<creationDate>2020/04/09</creationDate>
+	<creationDate>2020/05/01</creationDate>
 	<copyright>Copyright (C) 2020 POLYTOPE, Inc. All rights reserved.</copyright>
 	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
 	<authorEmail>info@polytope.co.jp</authorEmail>
 	<authorUrl>https://www.polytope.co.jp</authorUrl>
-	<version>1.1.1</version>
+	<version>1.2.1</version>
 	<description>MOD_POLY_INSTAGALLERY_XML_DESCRIPTION</description>
 
 	<customContent />
@@ -16,12 +16,15 @@
 		<filename module="mod_poly_instagallery">mod_poly_instagallery.php</filename>
 		<folder>tmpl</folder>
 		<folder>language</folder>
+		<folder>helper</folder>
+	</files>
+	
+	<media folder="media" destination="mod_poly_instagallery">
 		<folder>css</folder>
 		<folder>img</folder>
 		<folder>js</folder>
 		<folder>fonts</folder>
-		<folder>helper</folder>
-	</files>
+	</media>
 
 	<config>
 		<fields name="params">

@@ -11,7 +11,7 @@ defined('_JEXEC') or die;
 
 class InstagramHelper {
     const LOG_CATEGORY = 'mod_poly_instagallery';
-    const API_BASEURL = 'https://graph.facebook.com/v6.0/';
+    const API_BASEURL = 'https://graph.facebook.com/v9.0/';
     const FIELDS_MEDIA = 'media_url,media_type,comments_count,id,like_count,children{media_url,media_type,permalink},permalink,caption';
 
     public static function getInstagramItems(JRegistry $params) {

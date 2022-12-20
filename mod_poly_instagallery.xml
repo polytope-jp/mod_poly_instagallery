@@ -2,12 +2,12 @@
 <extension type="module" version="3.1" client="site" method="upgrade">
 	<name>MOD_POLY_INSTAGALLERY</name>
 	<author>POLYTOPE, Inc.</author>
-	<creationDate>2021/12/09</creationDate>
-	<copyright>Copyright (C) 2020-2021 POLYTOPE, Inc. All rights reserved.</copyright>
+	<creationDate>2022/12/20</creationDate>
+	<copyright>Copyright (C) 2020-2022 POLYTOPE, Inc. All rights reserved.</copyright>
 	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
 	<authorEmail>info@polytope.co.jp</authorEmail>
 	<authorUrl>https://www.polytope.co.jp</authorUrl>
-	<version>1.2.2</version>
+	<version>1.3.0</version>
 	<description>MOD_POLY_INSTAGALLERY_XML_DESCRIPTION</description>
 
 	<customContent />

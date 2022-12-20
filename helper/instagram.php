@@ -9,249 +9,305 @@
 
 defined('_JEXEC') or die;
 
-class InstagramHelper {
-    const LOG_CATEGORY = 'mod_poly_instagallery';
-    const API_BASEURL = 'https://graph.facebook.com/v9.0/';
-    const FIELDS_MEDIA = 'media_url,media_type,comments_count,id,like_count,children{media_url,media_type,permalink},permalink,caption';
+/**
+ * Instagram API Helper
+ * @package     mod_poly_instagallery
+ *
+ * @since       version 1.3.0
+ */
+class InstagramHelper
+{
+	const LOG_CATEGORY = 'mod_poly_instagallery';
+	const API_BASEURL = 'https://graph.facebook.com/v15.0/';
+	const FIELDS_MEDIA = 'media_url,media_type,comments_count,id,like_count,permalink,caption,children{media_url,media_type,permalink}';
+	const FIELDS_MEDIA_SINGLE = 'media_url,media_type,permalink,thumbnail_url';
 
-    public static function getInstagramItems(JRegistry $params) {
-        JLog::addLogger(array('text_file' => 'mod_poly_instagallery.php'), JLog::ALL, array(self::LOG_CATEGORY));
+	public static function getInstagramItems(JRegistry $params)
+	{
+		JLog::addLogger(array('text_file' => 'mod_poly_instagallery.php'), JLog::ALL, array(self::LOG_CATEGORY));
 
-        // Module Parameters
-        $from = $params->get('from');
+		$myUserName = self::getMyUserName($params);
 
-        if ($from === 'username') {
-            $items = self::getItemsFromUserName($params);
-        }
-        elseif ($from === 'hashtag') {
-            $items = self::getItemsFromHashTags($params);
-        }
-        else {
-            return false;
-        }
+		// Module Parameters
+		$from = $params->get('from');
 
-        if (!$items) {
-            return false;
-        }
+		if ($from === 'username')
+		{
+			$items = self::getItemsFromUserName($params);
 
-        $items = self::removeEmptyAlbum($items);
+			$userName    = $params->get('username');
+			if ($userName === $myUserName) {
+				foreach ($items as $idx => $item)
+				{
+					$items[$idx]['media'] = self::getMedia($item['id'], $params);
 
-        return $items;
-    }
+					if (array_key_exists('children', $item))
+					{
+						foreach ($item['children']['data'] as $cIdx => $child)
+						{
+							$items[$idx]['children']['data'][$cIdx]['media'] = self::getMedia($child['id'], $params);
+						}
+					}
+				}
+			}
+		}
+		elseif ($from === 'hashtag')
+		{
+			$items = self::getItemsFromHashTags($params);
+		}
+		else
+		{
+			return false;
+		}
 
-    private static function removeEmptyAlbum($items) {
-        foreach ($items as $itemIdx => $item) {
-            $mediaType = $item['media_type'];
+		if (!$items)
+		{
+			return false;
+		}
 
-            switch ($mediaType) {
-                case 'CAROUSEL_ALBUM':
-                    foreach ($item['children']['data'] as $childIdx => $child) {
-                        if (!array_key_exists('media_url', $child) || !array_key_exists('media_type', $child)) {
-                            unset($item['children']['data'][$childIdx]);
-                        }
-                    }
-                    $item['children']['data'] = array_merge($item['children']['data']);
-                    if (count($item['children']['data']) === 0) {
-                        unset($items[$itemIdx]);
-                    }
-                    break;
-                case 'IMAGE':
-                case 'VIDEO':
-                    if (!array_key_exists('media_url', $item)) {
-                        unset($items[$itemIdx]);
-                    }
-                    break;
-                default:
-                    unset($items[$itemIdx]);
-                    break;
-            }
-        }
-        $items = array_merge($items);
-        return $items;
-    }
+		return $items;
+	}
 
-    public static function getMediaUrl($item) {
-        $mediaType = $item['media_type'];
-        $url = '';
+	public static function getDisplayUrl($item)
+	{
+		$mediaType = $item['media_type'];
+		$url       = '';
 
-        switch ($mediaType) {
-            case 'CAROUSEL_ALBUM':
-                $url = $item['children']['data'][0]['media_url'];
-                break;
-            case 'IMAGE':
-            case 'VIDEO':
-                $url = $item['media_url'];
-                break;
-            default:
-                break;
-        }
+		switch ($mediaType)
+		{
+			case 'CAROUSEL_ALBUM':
+				$firstItem = $item['children']['data'][0];
+				if ($firstItem['media_type'] === 'IMAGE')
+				{
+					$url = $firstItem['media_url'];
+				}
+				elseif ($firstItem['media_type'] === 'VIDEO')
+				{
+					$url = $firstItem['media']['thumbnail_url'];
+				}
+				break;
+			case 'IMAGE':
+				$url = $item['media_url'];
+				break;
+			case 'VIDEO':
+				$url = $item['media']['thumbnail_url'];
+				break;
+			default:
+				break;
+		}
 
-        return $url;
-    }
+		return $url;
+	}
 
-    public static function getMediaType($item) {
-        $mediaType = $item['media_type'];
-        $type = '';
+	public static function floorEx($value, $precision = 1)
+	{
+		return round($value - 0.5 * pow(0.1, $precision), $precision, PHP_ROUND_HALF_UP);
+	}
 
-        switch ($mediaType) {
-            case 'CAROUSEL_ALBUM':
-                $type = $item['children']['data'][0]['media_type'];
-                break;
-            case 'IMAGE':
-            case 'VIDEO':
-                $type = $item['media_type'];
-                break;
-            default:
-                break;
-        }
+	private static function getItemsFromUserName(JRegistry $params)
+	{
+		// Module Parameters
+		$accountId   = $params->get('business_account_id');
+		$accessToken = $params->get('access_token');
+		$userName    = $params->get('username');
+		$cacheTime   = intval($params->get('cache_time', 60));
+		$itemNum     = $params->get('gallery_items');
 
-        return $type;
-    }
+		$userName = str_replace('@', '', $userName);
 
-    public static function floorEx($value, $precision = 1) {
-        return round($value - 0.5 * pow(0.1, $precision), $precision, PHP_ROUND_HALF_UP);
-    }
+		$url = self::API_BASEURL . $accountId
+			. '?fields=business_discovery.username(' . $userName . '){followers_count,media_count,media.limit(' . $itemNum . '){' . self::FIELDS_MEDIA . '}}'
+			. '&access_token=' . $accessToken;
 
-    private static function getItemsFromUserName(JRegistry $params) {
-        // Module Parameters
-        $accountId = $params->get('business_account_id');
-        $accessToken = $params->get('access_token');
-        $userName = $params->get('username');
-        $cacheTime = intval($params->get('cache_time', 60));
-        $itemNum = $params->get('gallery_items');
+		$res = self::callJsonApi($url, $cacheTime);
+		if (!$res)
+		{
+			return false;
+		}
+		$items = $res['business_discovery']['media']['data'];
 
-        $userName = str_replace('@', '', $userName);
+		return $items;
+	}
 
-        $url = self::API_BASEURL . $accountId
-            . '?fields=business_discovery.username(' . $userName . '){followers_count,media_count,media.limit(' . $itemNum . '){' . self::FIELDS_MEDIA . '}}'
-            . '&access_token=' . $accessToken;
+	private static function getMyUserName(JRegistry $params)
+	{
+		// Module Parameters
+		$accountId   = $params->get('business_account_id');
+		$accessToken = $params->get('access_token');
+		$cacheTime   = intval($params->get('cache_time', 60));
 
-        $res = self::callJsonApi($url, $cacheTime);
-        if (!$res) {
-            return false;
-        }
-        $items = $res['business_discovery']['media']['data'];
+		$url = self::API_BASEURL . $accountId
+			. '?fields=username'
+			. '&access_token=' . $accessToken;
 
-        return $items;
-    }
+		$res = self::callJsonApi($url, $cacheTime);
+		if (!$res)
+		{
+			return false;
+		}
 
-    private static function getItemsFromHashTags(JRegistry $params)
-    {
-        // Module Parameters
-        $accountId = $params->get('business_account_id');
-        $accessToken = $params->get('access_token');
-        $hashTag = $params->get('hashtag');
-        $cacheTime = $params->get('cache_time');
+		return $res['username'];
+	}
 
-        $items = array();
-        $tags = explode(' ', $hashTag);
-        $tagsNum = count($tags);
+	private static function getMedia($mediaId, JRegistry $params)
+	{
+		// Module Parameters
+		$accessToken = $params->get('access_token');
+		$cacheTime   = intval($params->get('cache_time', 60));
 
-        foreach ($tags as $tagIdx => $tag) {
-            $tag = str_replace('#', '', $tag);
+		$url = self::API_BASEURL . $mediaId
+			. '?fields=' . self::FIELDS_MEDIA_SINGLE
+			. '&access_token=' . $accessToken;
 
-            // get hashtag ids
-            $url = self::API_BASEURL . 'ig_hashtag_search?user_id=' . $accountId
-                . '&q=' . $tag
-                . '&access_token=' . $accessToken;
-            $res = self::callJsonApi($url, $cacheTime);
-            if (!$res) {
-                return false;
-            }
-            $tagIds = $res['data'];
+		$res = self::callJsonApi($url, $cacheTime);
+		if (!$res)
+		{
+			return false;
+		}
 
-            if (count($tagIds) > 0) {
-                // search
-                $url = self::API_BASEURL . $tagIds[0]['id'] . '/top_media?user_id=' . $accountId
-                    . '&fields=' . self::FIELDS_MEDIA
-                    . '&access_token=' . $accessToken;
-                $res = self::callJsonApi($url, $cacheTime);
-                if (!$res) {
-                    return false;
-                }
+		return $res;
+	}
 
-                for ($itemIdx = 0; $itemIdx < count($res['data']); $itemIdx++) {
-                    $res['data'][$itemIdx]['sort_key'] = $tagIdx + $itemIdx * $tagsNum;
-                }
+	private static function getItemsFromHashTags(JRegistry $params)
+	{
+		// Module Parameters
+		$accountId   = $params->get('business_account_id');
+		$accessToken = $params->get('access_token');
+		$hashTag     = $params->get('hashtag');
+		$cacheTime   = $params->get('cache_time');
 
-                $items = array_merge($items, $res['data']);
-            }
-        }
+		$items   = array();
+		$tags    = explode(' ', $hashTag);
+		$tagsNum = count($tags);
 
-        // sort alternately
-        $sortKeys = array();
-        foreach ($items as $item) {
-            $sortKeys[] = $item['sort_key'];
-        }
-        array_multisort($sortKeys, SORT_ASC, SORT_NUMERIC, $items);
+		foreach ($tags as $tagIdx => $tag)
+		{
+			$tag = str_replace('#', '', $tag);
 
-        // unique by id
-        $ids = array();
-        foreach ($items as $itemIdx => $item) {
-            if (array_key_exists($item['id'], $ids)) {
-                unset($items[$itemIdx]);
-            }
-            else {
-                $ids[$item['id']] = true;
-            }
-        }
-        $items = array_merge($items);
+			// get hashtag ids
+			$url = self::API_BASEURL . 'ig_hashtag_search?user_id=' . $accountId
+				. '&q=' . $tag
+				. '&access_token=' . $accessToken;
+			$res = self::callJsonApi($url, $cacheTime);
+			if (!$res)
+			{
+				return false;
+			}
+			$tagIds = $res['data'];
 
-        return $items;
-    }
+			if (count($tagIds) > 0)
+			{
+				// search
+				$url = self::API_BASEURL . $tagIds[0]['id'] . '/top_media?user_id=' . $accountId
+					. '&fields=' . self::FIELDS_MEDIA
+					. '&access_token=' . $accessToken;
+				$res = self::callJsonApi($url, $cacheTime);
+				if (!$res)
+				{
+					return false;
+				}
 
-    private static function callJsonApi($url, $cacheTime) {
-        // Search Cache File
-        $cache = JFactory::getCache('mod_poly_instagallery', '')->cache;
-        $cache->setCaching(true);
-        $cache->setLifeTime($cacheTime);
+				for ($itemIdx = 0; $itemIdx < count($res['data']); $itemIdx++)
+				{
+					$res['data'][$itemIdx]['sort_key'] = $tagIdx + $itemIdx * $tagsNum;
+				}
 
-        $cacheId = md5($url);
+				$items = array_merge($items, $res['data']);
+			}
+		}
 
-        $cacheJson = $cache->get($cacheId);
-        if (!empty($cacheJson)) {
-            $cacheData = json_decode($cacheJson);
-            $result = json_decode($cacheData->response, true);
-            return $result;
-        }
+		// sort alternately
+		$sortKeys = array();
+		foreach ($items as $item)
+		{
+			$sortKeys[] = $item['sort_key'];
+		}
+		array_multisort($sortKeys, SORT_ASC, SORT_NUMERIC, $items);
 
-        $curl = curl_init();
+		// unique by id
+		$ids = array();
+		foreach ($items as $itemIdx => $item)
+		{
+			if (array_key_exists($item['id'], $ids))
+			{
+				unset($items[$itemIdx]);
+			}
+			else
+			{
+				$ids[$item['id']] = true;
+			}
+		}
+		$items = array_merge($items);
 
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'GET');
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+		return $items;
+	}
 
-        $response = curl_exec($curl);
-        $errno = curl_errno($curl);
+	private static function callJsonApi($url, $cacheTime)
+	{
+		// Search Cache File
+		$cache = JFactory::getCache('mod_poly_instagallery', '')->cache;
+		$cache->setCaching(true);
+		$cache->setLifeTime($cacheTime);
 
-        if (CURLE_OK !== $errno) {
-            // Error
-            JLog::add('API Error', JLog::ERROR, self::LOG_CATEGORY);
-            return false;
-        }
+		$cacheId = md5($url);
 
-        $result = json_decode($response, true);
-        if (empty($result)) {
-            // Error
-            JLog::add('API Error', JLog::ERROR, self::LOG_CATEGORY);
-            return false;
-        }
-        if (array_key_exists('error', $result)) {
-            // Error
-            JLog::add('API Error : ' . $result['error']['message'], JLog::ERROR, self::LOG_CATEGORY);
-            return false;
-        }
+		$cacheJson = $cache->get($cacheId);
+		if (!empty($cacheJson))
+		{
+			$cacheData = json_decode($cacheJson);
+			$result    = json_decode($cacheData->response, true);
 
-        // Save Cache File
-        $now = time();
-        $cacheData = new stdClass();
-        $cacheData->created = $now;
-        $cacheData->response = $response;
-        $cacheJson = json_encode($cacheData);
-        $cache->store($cacheJson, $cacheId);
+			return $result;
+		}
 
-        curl_close($curl);
-        return $result;
-    }
+		$curl = curl_init();
+
+		curl_setopt($curl, CURLOPT_URL, $url);
+		curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'GET');
+		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+
+		$response = curl_exec($curl);
+		$errno    = curl_errno($curl);
+
+		if (CURLE_OK !== $errno)
+		{
+			// Error
+			JLog::add('API Error', JLog::ERROR, self::LOG_CATEGORY);
+
+			return false;
+		}
+
+		$result = json_decode($response, true);
+		if (empty($result))
+		{
+			// Error
+			JLog::add('API Error', JLog::ERROR, self::LOG_CATEGORY);
+
+			return false;
+		}
+		if (array_key_exists('error', $result))
+		{
+			// Error
+			JLog::add('API Error : ' . $result['error']['message'], JLog::ERROR, self::LOG_CATEGORY);
+
+			return false;
+		}
+
+		// OK
+		JLog::add('API Called : ' . $url, JLog::INFO, self::LOG_CATEGORY);
+		JLog::add($response, JLog::INFO, self::LOG_CATEGORY);
+
+		// Save Cache File
+		$now                 = time();
+		$cacheData           = new stdClass();
+		$cacheData->created  = $now;
+		$cacheData->response = $response;
+		$cacheJson           = json_encode($cacheData);
+		$cache->store($cacheJson, $cacheId);
+
+		curl_close($curl);
+
+		return $result;
+	}
 }

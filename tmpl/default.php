@@ -35,9 +35,11 @@ if ($dispType === 'slider')
 	$spWidth = 100;
 }
 
+
+// Load JS / CSS
 $mediaPath = 'media/mod_poly_instagallery';
 
-JHtml::_('stylesheet', $mediaPath . '/css/mod_poly_instagallery.css', array('version' => 'auto', 'relative' => false));
+JHtml::_('jquery.framework');
 if ($dispType === 'slider')
 {
 	JHtml::_('stylesheet', $mediaPath . '/css/slick.css', array('version' => 'auto', 'relative' => false));
@@ -45,6 +47,7 @@ if ($dispType === 'slider')
 	JHtml::_('script', $mediaPath . '/js/slick.min.js', array('version' => 'auto', 'relative' => false));
 }
 
+JHtml::_('stylesheet', $mediaPath . '/css/mod_poly_instagallery.css', array('version' => 'auto', 'relative' => false));
 $doc->addStyleDeclaration("
 .poly_insta-item .poly_insta-overlay {
     background-color: {$hoverColor} !important;

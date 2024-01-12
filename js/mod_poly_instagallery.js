@@ -9,9 +9,20 @@ jQuery(function ($) {
 
                 for (let idx = 0; idx < data.length; idx++) {
                     let item = data[idx];
+
+                    let media = '';
+                    if (item.display_url.indexOf('.mp4') > -1)
+                    {
+                        media = '<video src="' + item.display_url + '"/>';
+                    }
+                    else
+                    {
+                        media = '<img alt="" src="' + item.display_url + '"/>'
+                    }
+
                     $(
                         '<a href="' + item.permalink + '" target="_blank">' +
-                        '<div class="poly_insta-item"><img alt="" src="' + item.display_url + '"/>' +
+                        '<div class="poly_insta-item">' + media +
                         '<div class="poly_insta-overlay">' +
                         '<div class="poly_insta-iteminfo">' +
                         '<span class="icon-heart"></span>' + item.like_count +

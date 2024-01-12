@@ -83,14 +83,28 @@ class InstagramHelper
 				}
 				elseif ($firstItem['media_type'] === 'VIDEO')
 				{
-					$url = $firstItem['media']['thumbnail_url'];
+					if (isset($item['media']['thumbnail_url']))
+					{
+						$url = $item['media']['thumbnail_url'];
+					}
+					else
+					{
+						$url = $item['media_url'];
+					}
 				}
 				break;
 			case 'IMAGE':
 				$url = $item['media_url'];
 				break;
 			case 'VIDEO':
-				$url = $item['media']['thumbnail_url'];
+				if (isset($item['media']['thumbnail_url']))
+				{
+					$url = $item['media']['thumbnail_url'];
+				}
+				else
+				{
+					$url = $item['media_url'];
+				}
 				break;
 			default:
 				break;

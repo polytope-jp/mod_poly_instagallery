@@ -4,7 +4,7 @@ POLYTOPE Instagram Gallery Module for Joomla!
 This module dedicates users a display of Instagram images on the website.
 
 ## Description
-- using facebook graph api v15.0
+- using facebook graph api v19.0
 - fully responsive
 - search feed from username or hashtag
 

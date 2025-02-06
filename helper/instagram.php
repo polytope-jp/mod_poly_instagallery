@@ -197,6 +197,7 @@ class InstagramHelper
 		foreach ($tags as $tagIdx => $tag)
 		{
 			$tag = str_replace('#', '', $tag);
+			$tag = urlencode($tag);
 
 			// get hashtag ids
 			$url = self::API_BASEURL . 'ig_hashtag_search?user_id=' . $accountId
